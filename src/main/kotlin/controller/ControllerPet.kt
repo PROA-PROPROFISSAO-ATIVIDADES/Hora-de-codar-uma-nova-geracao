@@ -17,11 +17,17 @@ class Controllerpet(
         )
     }
 
-    fun alimentar(nutricao: Int): ReplyFecth {
-        val resultado = repositoryPet.alimentarPet(
-            nutricao,
-            vontadeBanheiro = Atributos.VALOR_ALIMENTAR
-        )
+    fun alimentar(): ReplyFecth {
+        val pet = repositoryPet.pegarPet()
+        if (pet.nivelDeFome == Atributos.MINIMO) {
+            return ReplyFecth(
+                Atributos.STATUS_VALIDACAO,
+                "O pet não está com fome.",
+                pet
+            )
+        }
+
+        val resultado = repositoryPet.alimentarPet()
         return ReplyFecth(
             200,
             "Pet alimentado com sucesso! Nível de fome: ${resultado.nivelDeFome}, vontade de ir ao banheiro: ${resultado.vontadeBanheiro}",
@@ -30,12 +36,16 @@ class Controllerpet(
     }
 
     fun brincar(): ReplyFecth {
-        val resultado = repositoryPet.brincarPet(
-            Atributos.VALOR_BRINCAR,
-            Atributos.VALOR_BRINCAR,
-            Atributos.VALOR_BRINCAR,
-            Atributos.VALOR_BRINCAR
-        )
+        val pet = repositoryPet.pegarPet()
+        if (pet.cansaco == Atributos.LIMITE) {
+            return ReplyFecth(
+                Atributos.STATUS_VALIDACAO,
+                "O pet está muito cansado para poder brincar.",
+                pet
+            )
+        }
+
+        val resultado = repositoryPet.brincarPet()
         return ReplyFecth(
             200,
             "Pet brincou com sucesso! Cansaço: ${resultado.cansaco}, fome: ${resultado.nivelDeFome}, felicidade: ${resultado.nivelFelicidade}, sujeira: ${resultado.sujeira}",
@@ -44,10 +54,24 @@ class Controllerpet(
     }
 
     fun descansar(horas: Int): ReplyFecth {
-        val horasDeSono = horas.coerceIn(Atributos.MINIMO, Atributos.HORAS_DESCANSO)
-        val resultado = repositoryPet.descansarPet(
-            cansaco = horasDeSono * Atributos.LIMITE / Atributos.HORAS_DESCANSO
-        )
+        val pet = repositoryPet.pegarPet()
+        if (horas <= Atributos.MINIMO || horas > Atributos.HORAS_DESCANSO) {
+            return ReplyFecth(
+                Atributos.STATUS_VALIDACAO,
+                "Informe entre 1 e ${Atributos.HORAS_DESCANSO} horas de descanso.",
+                pet
+            )
+        }
+        if (pet.cansaco == Atributos.MINIMO) {
+            return ReplyFecth(
+                Atributos.STATUS_VALIDACAO,
+                "O pet não está cansado.",
+                pet
+            )
+        }
+
+        val horasDeSono = horas
+        val resultado = repositoryPet.descansarPet(horasDeSono)
         return ReplyFecth(
             200,
             "Pet descansou por $horasDeSono hora(s)! Cansaço: ${resultado.cansaco}",
@@ -56,14 +80,30 @@ class Controllerpet(
     }
 
     fun irAoBanheiro(): ReplyFecth {
-        val resultado = repositoryPet.irAoBanheiroPet(
-            Atributos.VALOR_BANHEIRO
-        )
+        val pet = repositoryPet.pegarPet()
+        if (pet.vontadeBanheiro == Atributos.MINIMO) {
+            return ReplyFecth(
+                Atributos.STATUS_VALIDACAO,
+                "O pet não precisa ir ao banheiro.",
+                pet
+            )
+        }
+
+        val resultado = repositoryPet.irAoBanheiroPet()
         return ReplyFecth(200, "O pet foi ao banheiro!", resultado)
     }
 
     fun tomarBanho(): ReplyFecth {
-        val resultado = repositoryPet.tomarBanhoPet(sujeira = Atributos.VALOR_BANHO)
+        val pet = repositoryPet.pegarPet()
+        if (pet.sujeira == Atributos.MINIMO) {
+            return ReplyFecth(
+                Atributos.STATUS_VALIDACAO,
+                "O pet não está sujo.",
+                pet
+            )
+        }
+
+        val resultado = repositoryPet.tomarBanhoPet()
         return ReplyFecth(200, "O pet tomou banho!", resultado)
     }
 
@@ -88,14 +128,7 @@ class Controllerpet(
     }
 
     fun passarTempo(): ReplyFecth {
-        val resultado = repositoryPet.passarTempoPet(
-            Atributos.FOME_POR_CICLO,
-            Atributos.FELICIDADE_POR_CICLO,
-            Atributos.CANSACO_POR_CICLO,
-            Atributos.IDADE_POR_CICLO,
-            Atributos.BANHEIRO_POR_CICLO,
-            Atributos.SUJEIRA_POR_CICLO
-        )
+        val resultado = repositoryPet.passarTempoPet()
 
         if(resultado.idade >= Atributos.META_IDADE){
             return ReplyFecth(
@@ -142,7 +175,7 @@ class Controllerpet(
             )
         }
         if (pet.vontadeBanheiro >= Atributos.LIMITE) {
-            return ReplyFecth(400, "O pet não foi ao banheiro! Game Over.", pet)
+            return ReplyFecth(400, "O pet não foi ao banheiro por muito tempo! Game Over.", pet)
         }
         if (pet.sujeira >= Atributos.LIMITE) {
             return ReplyFecth(400, "O pet ficou sujo demais! Game Over.", pet)

@@ -33,7 +33,7 @@ class viewpet(
             val escolha = readlnOrNull()?.toIntOrNull() ?: continue
 
             val resultado = when (escolha) {
-                1 -> controller.alimentar(Atributos.VALOR_ALIMENTAR)
+                1 -> controller.alimentar()
                 2 -> controller.brincar()
                 3 -> {
                     println("Por quantas horas o pet vai descansar?")
@@ -58,6 +58,10 @@ class viewpet(
             }
 
             println(resultado.message)
+            if (resultado.status == Atributos.STATUS_VALIDACAO) {
+                continue
+            }
+
             val derrota = controller.verificarDerrota()
             if (derrota.status == 400) {
                 println(derrota.message)

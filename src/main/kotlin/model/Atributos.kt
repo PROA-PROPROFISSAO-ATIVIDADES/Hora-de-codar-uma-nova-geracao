@@ -1,6 +1,7 @@
 package model
 
 object Atributos {
+    const val STATUS_VALIDACAO = 422
     const val MINIMO = 0
     const val LIMITE = 100
     const val META_IDADE = 50

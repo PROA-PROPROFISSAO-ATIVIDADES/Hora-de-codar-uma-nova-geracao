@@ -18,57 +18,63 @@ class RepositoryImpPet : RepositoryPet {
         return petAtual()
     }
 
-    override fun alimentarPet(nutricao: Int, vontadeBanheiro: Int): Pet {
+    override fun alimentarPet(): Pet {
         val petAtual = petAtual()
         petAtual.nivelDeFome =
-            (petAtual.nivelDeFome - nutricao).coerceAtLeast(Atributos.MINIMO)
+            (petAtual.nivelDeFome - Atributos.VALOR_ALIMENTAR).coerceAtLeast(Atributos.MINIMO)
         petAtual.vontadeBanheiro =
-            (petAtual.vontadeBanheiro + vontadeBanheiro).coerceAtMost(Atributos.LIMITE)
+            (petAtual.vontadeBanheiro + Atributos.VALOR_ALIMENTAR).coerceAtMost(Atributos.LIMITE)
         return petAtual
     }
-    override fun brincarPet(felicidade: Int, cansaco: Int, fome: Int, sujeira: Int): Pet {
+    override fun brincarPet(): Pet {
         val petAtual = petAtual()
         petAtual.nivelFelicidade =
-            (petAtual.nivelFelicidade + felicidade).coerceAtMost(Atributos.LIMITE)
-        petAtual.cansaco = (petAtual.cansaco + cansaco).coerceAtMost(Atributos.LIMITE)
-        petAtual.nivelDeFome = (petAtual.nivelDeFome + fome).coerceAtMost(Atributos.LIMITE)
-        petAtual.sujeira = (petAtual.sujeira + sujeira).coerceAtMost(Atributos.LIMITE)
+            (petAtual.nivelFelicidade + Atributos.VALOR_BRINCAR).coerceAtMost(Atributos.LIMITE)
+        petAtual.cansaco =
+            (petAtual.cansaco + Atributos.VALOR_BRINCAR).coerceAtMost(Atributos.LIMITE)
+        petAtual.nivelDeFome =
+            (petAtual.nivelDeFome + Atributos.VALOR_BRINCAR).coerceAtMost(Atributos.LIMITE)
+        petAtual.sujeira =
+            (petAtual.sujeira + Atributos.VALOR_BRINCAR).coerceAtMost(Atributos.LIMITE)
         return petAtual
     }
-    override fun descansarPet(cansaco: Int): Pet {
+    override fun descansarPet(horas: Int): Pet {
         val petAtual = petAtual()
         petAtual.cansaco =
-            (petAtual.cansaco - cansaco).coerceAtLeast(Atributos.MINIMO)
+            (petAtual.cansaco -
+                horas * Atributos.LIMITE / Atributos.HORAS_DESCANSO)
+                .coerceAtLeast(Atributos.MINIMO)
         return petAtual
     }
-    override fun irAoBanheiroPet(vontadeBanheiro: Int): Pet {
+    override fun irAoBanheiroPet(): Pet {
         val petAtual = petAtual()
         petAtual.vontadeBanheiro =
-            (petAtual.vontadeBanheiro - vontadeBanheiro).coerceAtLeast(Atributos.MINIMO)
+            (petAtual.vontadeBanheiro - Atributos.VALOR_BANHEIRO)
+                .coerceAtLeast(Atributos.MINIMO)
         return petAtual
     }
-    override fun tomarBanhoPet(sujeira: Int): Pet {
+    override fun tomarBanhoPet(): Pet {
         val petAtual = petAtual()
-        petAtual.sujeira = (petAtual.sujeira - sujeira).coerceAtLeast(Atributos.MINIMO)
-        return petAtual
-    }
-    override fun passarTempoPet(
-        fome: Int,
-        felicidade: Int,
-        cansaco: Int,
-        idade: Int,
-        vontadeBanheiro: Int,
-        sujeira: Int
-    ): Pet {
-        val petAtual = petAtual()
-        petAtual.nivelDeFome = (petAtual.nivelDeFome + fome).coerceAtMost(Atributos.LIMITE)
-        petAtual.nivelFelicidade -= felicidade
-        petAtual.cansaco = (petAtual.cansaco + cansaco).coerceAtMost(Atributos.LIMITE)
-        petAtual.idade += idade
-        petAtual.vontadeBanheiro =
-            (petAtual.vontadeBanheiro + vontadeBanheiro).coerceAtMost(Atributos.LIMITE)
         petAtual.sujeira =
-            (petAtual.sujeira + sujeira).coerceAtMost(Atributos.LIMITE)
+            (petAtual.sujeira - Atributos.VALOR_BANHO).coerceAtLeast(Atributos.MINIMO)
+        return petAtual
+    }
+    override fun passarTempoPet(): Pet {
+        val petAtual = petAtual()
+        petAtual.nivelDeFome =
+            (petAtual.nivelDeFome + Atributos.FOME_POR_CICLO).coerceAtMost(Atributos.LIMITE)
+        petAtual.nivelFelicidade =
+            (petAtual.nivelFelicidade - Atributos.FELICIDADE_POR_CICLO)
+                .coerceAtLeast(Atributos.MINIMO)
+        petAtual.cansaco =
+            (petAtual.cansaco + Atributos.CANSACO_POR_CICLO).coerceAtMost(Atributos.LIMITE)
+        petAtual.idade += Atributos.IDADE_POR_CICLO
+        petAtual.vontadeBanheiro =
+            (petAtual.vontadeBanheiro + Atributos.BANHEIRO_POR_CICLO)
+                .coerceAtMost(Atributos.LIMITE)
+        petAtual.sujeira =
+            (petAtual.sujeira + Atributos.SUJEIRA_POR_CICLO)
+                .coerceAtMost(Atributos.LIMITE)
         return petAtual
     }
 
