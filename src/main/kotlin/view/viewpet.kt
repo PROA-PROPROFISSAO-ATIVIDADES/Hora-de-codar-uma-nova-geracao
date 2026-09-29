@@ -1,15 +1,15 @@
 package view
 
 import controller.Controllerpet
-import kotlin.system.exitProcess
+import model.Atributos
 
 class viewpet(
     private val controller: Controllerpet
 ) {
     fun criarpet(){
-        println("Bem-vindo ao Simulador de Animal de Estimação Virtual!")
-        println("Digite o nome do seu animal de estimação:")
-        val nomePet = readLine() ?: "Baltazar Guilherme Tenório"
+        println("Simulador de Animal de Estimacao Virtual")
+        println("Digite o nome do seu animal de estimacao:")
+        val nomePet = readlnOrNull() ?: "Pet"
         val pet = controller.criarPet(nomePet)
         println(pet.message)
 
@@ -19,43 +19,65 @@ class viewpet(
     fun menuPet() {
         val pet = controller.pegarPet()
         while (true) {
-            println("\nEscolha uma ação:")
-            println("1. Alimentar ${pet.nome}")
-            println("2. Brincar com ${pet.nome}")
-            println("3. Descansar ${pet.nome}")
-            println("4. Verificar o status de ${pet.nome}")
-            println("5. Sair")
+            println()
+            println("Pet: ${pet.nome}")
+            println("1. Alimentar")
+            println("2. Brincar")
+            println("3. Descansar")
+            println("4. Ir ao banheiro")
+            println("5. Tomar banho")
+            println("6. Verificar status")
+            println("7. Sair")
+            print("Escolha uma opcao: ")
 
-            val escolha = readLine()?.toIntOrNull() ?: continue
+            val escolha = readlnOrNull()?.toIntOrNull() ?: continue
 
             val resultado = when (escolha) {
-                1 -> controller.alimentar(10)
+                1 -> controller.alimentar(Atributos.VALOR_ALIMENTAR)
                 2 -> controller.brincar()
-                3 -> controller.descansar()
-                4 -> controller.verificarStatus()
-                5 -> {
-                    println("Saindo do Simulador de Animal de Estimação Virtual. Adeus!")
+                3 -> {
+                    println("Por quantas horas o pet vai descansar?")
+                    val horas = readlnOrNull()?.toIntOrNull()
+                    if (horas == null || horas < 0) {
+                        println("Informe uma quantidade valida de horas.")
+                        continue
+                    }
+                    controller.descansar(horas)
+                }
+                4 -> controller.irAoBanheiro()
+                5 -> controller.tomarBanho()
+                6 -> controller.verificarStatus()
+                7 -> {
+                    println("Saindo do simulador. Ate logo!")
                     return
                 }
                 else -> {
-                    println("Escolha inválida. Tente novamente.")
+                    println("Escolha invalida. Tente novamente.")
                     continue
                 }
             }
 
             println(resultado.message)
-
             val derrota = controller.verificarDerrota()
             if (derrota.status == 400) {
                 println(derrota.message)
                 return
             }
-            val tempo = controller.passarTempo()
 
-            if(tempo.status == 210) {
-                println(tempo.message)
-                exitProcess(0)
+            if (escolha == 6) {
+                continue
             }
+
+            val tempo = controller.passarTempo()
+            if (tempo.status == 400) {
+                println(tempo.message)
+                return
+            }
+            if (tempo.status == 210) {
+                println(tempo.message)
+                return
+            }
+            println(tempo.message)
         }
     }
 }
