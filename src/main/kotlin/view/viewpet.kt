@@ -1,6 +1,7 @@
 package view
 
 import controller.Controllerpet
+import kotlin.system.exitProcess
 
 class viewpet(
     private val controller: Controllerpet
@@ -44,7 +45,17 @@ class viewpet(
 
             println(resultado.message)
 
-            controller.passarTempo()
+            val derrota = controller.verificarDerrota()
+            if (derrota.status == 400) {
+                println(derrota.message)
+                return
+            }
+            val tempo = controller.passarTempo()
+
+            if(tempo.status == 210) {
+                println(tempo.message)
+                exitProcess(0)
+            }
         }
     }
 }

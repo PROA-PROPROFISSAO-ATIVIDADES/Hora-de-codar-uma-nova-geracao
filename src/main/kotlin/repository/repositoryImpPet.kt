@@ -13,26 +13,27 @@ class RepositoryImpPet : RepositoryPet {
         return pet!!
     }
 
-    override fun alimentarPet(nutricao: Int): Int {
+    override fun alimentarPet(nutricao: Int): Pet {
         val petAtual = pet!!
         petAtual.nivelDeFome = (petAtual.nivelDeFome - nutricao).coerceAtLeast(0)
-        return petAtual.nivelDeFome
+        return petAtual
     }
-    override fun brincarPet(felicidade: Int): Int {
+    override fun brincarPet(felicidade: Int, cansaco: Int, fome: Int): Pet {
         val petAtual = pet!!
         petAtual.nivelFelicidade += felicidade
-        petAtual.cansaco += 10
-        return petAtual.cansaco
+        petAtual.cansaco += cansaco
+        petAtual.nivelDeFome += fome
+        return petAtual
     }
-    override fun descansarPet(): Int {
+    override fun descansarPet(cansaco: Int): Pet {
         val petAtual = pet!!
-        petAtual.cansaco = (petAtual.cansaco - 10).coerceAtLeast(0)
-        return petAtual.cansaco
+        petAtual.cansaco = (petAtual.cansaco - cansaco).coerceAtLeast(0)
+        return petAtual
     }
-    override fun passarTempoPet(): Int {
+    override fun passarTempoPet(idade: Int): Pet {
         val petAtual = pet!!
-        petAtual.idade++
-        return petAtual.idade
+        petAtual.idade += idade
+        return petAtual
     }
 
     override fun pegarPet(): Pet {
